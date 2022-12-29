@@ -10,22 +10,24 @@
 '''
 
 
-
 import os
 import functools
 
 # 自定义排序规则
+
+
 def my_compare(path1, path2):
     name1 = os.path.basename(path1)
     name2 = os.path.basename(path2)
-    if int(name1[:-4]) < int(name2[:-4]):
+    if int(name1[4:-4]) < int(name2[4:-4]):
         return -1
     else:
         return 1
 
 
 imagesFileName = []
-imagesDir = "/opt_disk2/rd22946/my_data/map/3/bride"
+# "/opt_disk2/rd22946/my_data/from_tongwenchao/map_R_resize"
+imagesDir = "/opt_disk2/rd22946/my_data/bookCovers/database"
 
 for (dirpath, dirnames, filenames) in os.walk(imagesDir):
     for filename in filenames:

@@ -85,9 +85,16 @@ std::vector<cv::Mat> loadFeatures(std::vector<string> path_to_images, string des
 int main(int argc, char **argv) {
     try {
         CmdLineParser cml(argc, argv);
-        if (argc < 4 || cml["-h"]) throw std::runtime_error("Usage: dbowfile.txt   image  fbowfile.fbow ");
+        // if (argc < 4 || cml["-h"]) throw std::runtime_error("Usage: dbowfile.txt   image  fbowfile.fbow ");
+
+        string projectDir = "/opt_disk2/rd22946/vscode_work/cppProjects/fbow-master/";
+        // string orbFeasFile = projectDir + "data/myorbImgsFeatures.feat";
+        string orbOutputFile = projectDir + "data/output.fbow";
+        string queryImg = "/opt_disk2/rd22946/my_data/map/3/bride/20.jpg";
+        string orbDBOWFile = projectDir + "data/dbowfile.txt";
+
         cout << "extracting features" << endl;
-        std::vector<cv::Mat> features = loadFeatures({argv[2]}, "orb");
+        std::vector<cv::Mat> features = loadFeatures({queryImg}, "orb");
 
         double dbow2_load, dbow2_transform;
         double fbow_load, fbow_transform;
@@ -96,7 +103,7 @@ int main(int argc, char **argv) {
             ORBVocabulary voc;
             cout << "loading dbow2 voc...." << endl;
             auto t_start = std::chrono::high_resolution_clock::now();
-            voc.loadFromTextFile(argv[1]);
+            voc.loadFromTextFile(orbDBOWFile);
             auto t_end = std::chrono::high_resolution_clock::now();
             auto desc_vector = toDescriptorVector(features[0]);  //transform into the mode required by dbow2
             dbow2_load = double(std::chrono::duration_cast<std::chrono::milliseconds>(t_end - t_start).count());
@@ -118,7 +125,7 @@ int main(int argc, char **argv) {
         fbow::Vocabulary fvoc;
         cout << "loading fbow voc...." << endl;
         auto t_start = std::chrono::high_resolution_clock::now();
-        fvoc.readFromFile(argv[3]);
+        fvoc.readFromFile(orbOutputFile);
         auto t_end = std::chrono::high_resolution_clock::now();
         fbow_load = double(std::chrono::duration_cast<std::chrono::milliseconds>(t_end - t_start).count());
         cout << "load time=" << fbow_load << " ms" << endl;

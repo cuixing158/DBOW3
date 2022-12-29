@@ -1,21 +1,13 @@
 //Second step,creates the vocabulary from the set of features. It can be slow
 #include <iostream>
-#include <fstream>
 #include <vector>
 
-//
-#include "vocabulary_creator.h"
-// OpenCV
-#include <opencv2/core/core.hpp>
+// DBoW3
+#include "DBoW3.h"
 
 // OpenCV
 #include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/features2d/features2d.hpp>
-#ifdef USE_CONTRIB
-#include <opencv2/xfeatures2d/nonfree.hpp>
-#include <opencv2/xfeatures2d.hpp>
-#endif
+using namespace DBoW3;
 using namespace std;
 
 //command line parser
@@ -71,49 +63,28 @@ vector<cv::Mat> readFeaturesFromFile(string filename) {
 
 int main(int argc, char **argv) {
     try {
-        // CmdLineParser cml(argc, argv);
-        // if (cml["-h"] || argc < 3) {
-        //     cerr << "Usage:  features output.yml " << endl;
+        // CmdLineParser cml(argc,argv);
+        // if (cml["-h"] || argc!=3){
+        //     cerr<<"Usage:  features output_voc.yml[.gz]"<<endl;
         //     return -1;
         // }
-
         string projectDir = "/opt_disk2/rd22946/vscode_work/cppProjects/fbow-master/";
-        string orbFeasFile = projectDir + "data/myorbImgsFeatures.feat";
-        string orbOutputFile = projectDir + "data/output.yml";
+        string descriptor = "orb";
+        string outputFile = projectDir + "data/myorbImgsFeatures.feat";
+        string vocPath = projectDir + "data/voc.yml";
 
-        auto features = readFeaturesFromFile(orbFeasFile);
+        auto features = readFeaturesFromFile(outputFile);
 
-        //defining terms for bowkmeans trainer
-        cv::TermCriteria tc(CV_TERMCRIT_ITER, 100, 0.001);
-        int dictionarySize = 1000;
-        int retries = 1;
-        int flags = cv::KMEANS_PP_CENTERS;
-        cv::BOWKMeansTrainer bowTrainer(583, tc, retries, flags);
-        for (auto &f : features) {
-            cv::Mat c32f;
-            f.convertTo(c32f, CV_32F);
-            bowTrainer.add(c32f);
-        }
-        cout << "Clusgering" << endl;
-        cv::Mat dictionary = bowTrainer.cluster();
-        cout << "done" << endl;
-        //store the vocabulary
-        cv::FileStorage fs(orbOutputFile, cv::FileStorage::WRITE);
-        fs << "vocabulary" << dictionary;
-        fs.release();
+        const int k = 9;
+        const int L = 3;
+        const WeightingType weight = TF_IDF;
+        const ScoringType score = L1_NORM;
+        DBoW3::Vocabulary voc(k, L, weight, score);
 
-        cv::Mat uDictionary;
-        dictionary.convertTo(uDictionary, CV_8UC1);
-        cv::BOWImgDescriptorExtractor bowDE(cv::DescriptorMatcher::create("BruteForce-Hamming"));
-        bowDE.setVocabulary(uDictionary);
-
-        auto t_start = std::chrono::high_resolution_clock::now();
-        cv::Mat res;
-        for (int i = 0; i < 1000; i++)
-            bowDE.compute(features[0], res);
-        auto t_end = std::chrono::high_resolution_clock::now();
-
-        cout << "time=" << double(std::chrono::duration_cast<std::chrono::nanoseconds>(t_end - t_start).count()) / 1e6 << " ns" << endl;
+        cout << "Creating a small " << k << "^" << L << " vocabulary..." << endl;
+        voc.create(features);
+        cerr << "Saving " << argv[2] << endl;
+        voc.save(vocPath);
 
     } catch (std::exception &ex) {
         cerr << ex.what() << endl;

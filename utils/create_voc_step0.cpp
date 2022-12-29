@@ -1,9 +1,10 @@
 
 //First step of creating a vocabulary is extracting features from a set of images. We save them to a file for next step
 #include <iostream>
-#include <fstream>
 #include <vector>
-#include "fbow.h"
+
+// DBoW3
+#include "DBoW3.h"
 
 // OpenCV
 #include <opencv2/core/core.hpp>
@@ -13,8 +14,9 @@
 #include <opencv2/xfeatures2d/nonfree.hpp>
 #include <opencv2/xfeatures2d.hpp>
 #endif
+#include "DescManip.h"
 
-using namespace fbow;
+using namespace DBoW3;
 using namespace std;
 
 //command line parser
@@ -42,6 +44,9 @@ class CmdLineParser {
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// extended surf gives 128-dimensional vectors
+const bool EXTENDED_SURF = false;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 void wait() {
@@ -50,38 +55,26 @@ void wait() {
     getchar();
 }
 
-vector<string> readImagePathsFromFile(string txtlist) {
+vector<string> readImagePaths(int argc, char **argv, int start) {
     vector<string> paths;
-    // Open file
-    std::ifstream infile(txtlist, std::ios::binary);
-
-    while (!infile.eof()) {
-        string line;
-        getline(infile, line);
-
-        if (line.length() > 0)
-            paths.push_back(line);
-
-        std::cout << line << std::endl;
-    }
-
+    for (int i = start; i < argc; i++) paths.push_back(argv[i]);
     return paths;
 }
 
-vector<cv::Mat> loadFeatures(std::vector<string> path_to_images, string descriptor = "") {
+vector<cv::Mat> loadFeatures(std::vector<string> path_to_images, string descriptor = "") throw(std::exception) {
     //select detector
     cv::Ptr<cv::Feature2D> fdetector;
     if (descriptor == "orb")
-        fdetector = cv::ORB::create(2000);
+        fdetector = cv::ORB::create();
     else if (descriptor == "brisk")
         fdetector = cv::BRISK::create();
 #ifdef OPENCV_VERSION_3
     else if (descriptor == "akaze")
-        fdetector = cv::AKAZE::create(cv::AKAZE::DESCRIPTOR_MLDB, 0, 3, 1e-4);
+        fdetector = cv::AKAZE::create();
 #endif
 #ifdef USE_CONTRIB
     else if (descriptor == "surf")
-        fdetector = cv::xfeatures2d::SURF::create(15, 4, 2);
+        fdetector = cv::xfeatures2d::SURF::create(400, 4, 2, EXTENDED_SURF);
 #endif
 
     else
@@ -99,30 +92,24 @@ vector<cv::Mat> loadFeatures(std::vector<string> path_to_images, string descript
         cout << "extracting features" << endl;
         fdetector->detectAndCompute(image, cv::Mat(), keypoints, descriptors);
         features.push_back(descriptors);
-        cout << "done detecting features (" << i << "/" << path_to_images.size() << ")" << endl;
+        cout << "done detecting features" << endl;
     }
     return features;
 }
 
 // ----------------------------------------------------------------------------
-void saveToFile(string filename, const vector<cv::Mat> &features, std::string desc_name, bool rewrite = true) {
+void saveToFile(string filename, const vector<cv::Mat> &features) {
     //test it is not created
-    if (!rewrite) {
-        std::fstream ifile(filename);
-        if (ifile.is_open())  //read size and rewrite
-            std::runtime_error("ERROR::: Output File " + filename + " already exists!!!!!");
-    }
-    std::ofstream ofile(filename, std::ios::binary);
+    // std::ifstream ifile(filename);
+    // if (ifile.is_open()) {
+    //     cerr << "ERROR::: Output File " << filename << " already exists!!!!!" << endl;
+    //     exit(0);
+    // }
+    std::ofstream ofile(filename);
     if (!ofile.is_open()) {
         cerr << "could not open output file" << endl;
         exit(0);
     }
-
-    char _desc_name[20];
-    desc_name.resize(min(size_t(19), desc_name.size()));
-    strcpy(_desc_name, desc_name.c_str());
-    ofile.write(_desc_name, 20);
-
     uint32_t size = features.size();
     ofile.write((char *)&size, sizeof(size));
     for (auto &f : features) {
@@ -146,20 +133,27 @@ int main(int argc, char **argv) {
     try {
         // CmdLineParser cml(argc, argv);
         // if (cml["-h"] || argc == 1) {
-        //     cerr << "Usage:  descriptor_name output txtlist \n\t descriptors:brisk,surf,orb(default),akaze(only if using opencv 3)" << endl;
+        //     cerr << "Usage:  descriptor_name output image0 image1 ... \n\t descriptors:brisk,surf,orb(default),akaze(only if using opencv 3)" << endl;
         //     return -1;
         // }
 
         string projectDir = "/opt_disk2/rd22946/vscode_work/cppProjects/fbow-master/";
-
         string descriptor = "orb";
-        string output = projectDir + "data/myorbImgsFeatures.feat";
+        string outputFile = projectDir + "data/myorbImgsFeatures.feat";
         string pathName = projectDir + "imagePath.txt";
-        auto images = readImagePathsFromFile(pathName);
+
+        string output = outputFile;
+        std::vector<string> images;
+        string line;
+        ifstream fid(pathName, std::ios_base::in);
+        while (std::getline(fid, line)) {
+            images.push_back(line);
+        }
+
         vector<cv::Mat> features = loadFeatures(images, descriptor);
 
         //save features to file
-        saveToFile(output, features, descriptor);
+        saveToFile(outputFile, features);
 
     } catch (std::exception &ex) {
         cerr << ex.what() << endl;

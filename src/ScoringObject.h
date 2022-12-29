@@ -11,11 +11,11 @@
 #define __D_T_SCORING_OBJECT__
 
 #include "BowVector.h"
-
-namespace DBoW2 {
+#include "exports.h"
+namespace  DBoW3 {
 
 /// Base class of scoring functions
-class GeneralScoring
+class  DBOW_API GeneralScoring
 {
 public:
   /**
@@ -39,9 +39,8 @@ public:
 	static const double LOG_EPS; 
   // If you change the type of WordValue, make sure you change also the
 	// epsilon value (this is needed by the KL method)
-
-  virtual ~GeneralScoring() {} //!< Required for virtual base classes
 	
+  virtual ~GeneralScoring() {} //!< Required for virtual base classes	
 };
 
 /** 
@@ -90,7 +89,7 @@ class __SCORING_CLASS(DotProductScoring, false, L1);
 
 #undef __SCORING_CLASS
   
-} // namespace DBoW2
+} // namespace DBoW3
 
 #endif
 

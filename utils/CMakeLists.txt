@@ -1,10 +1,11 @@
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src )
 LINK_LIBRARIES(${PROJECT_NAME})
+message(STATUS "PROJECT_NAME111111111:${PROJECT_NAME}")
 IF(OPENCV_VERSION_3)
 ADD_EXECUTABLE(demo_general demo_general.cpp)
 ADD_EXECUTABLE(create_voc_step0 create_voc_step0.cpp)
 ADD_EXECUTABLE(create_voc_step1 create_voc_step1.cpp)
 add_executable(demo_queryImg demo_queryImg.cpp)
-INSTALL(TARGETS  demo_general  create_voc_step0  create_voc_step1  RUNTIME DESTINATION bin)
+INSTALL(TARGETS  demo_general  create_voc_step0  create_voc_step1  demo_queryImg RUNTIME DESTINATION bin)
 ENDIF()

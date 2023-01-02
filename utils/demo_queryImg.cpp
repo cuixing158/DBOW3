@@ -53,10 +53,9 @@ int main(int argc, char **argv) {
     try {
         string projectDir = "/opt_disk2/rd22946/vscode_work/cppProjects/fbow-master/";
         string descriptor = "orb";
-        string outputFile = projectDir + "data/myorbImgsFeatures.feat";
         string databasePath = projectDir + "data/small_db.yml.gz";
 
-        cv::Mat queryImg = cv::imread("/opt_disk2/rd22946/my_data/bookCovers/queries/query3.jpg", 0);
+        cv::Mat queryImg = cv::imread("/opt_disk2/rd22946/my_data/bookCovers/queries/query1.jpg", 0);
         if (queryImg.empty()) throw std::runtime_error("could not open image");
         QueryResults ret = retrieveImages(queryImg, databasePath);
         std::cout << ret << endl;

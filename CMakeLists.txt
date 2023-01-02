@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD 11)
 PROJECT(DBoW3)
 set(PROJECT_VERSION "0.0.1")
 string(REGEX MATCHALL "[0-9]" PROJECT_VERSION_PARTS "${PROJECT_VERSION}")
+message(STATUS "项目名：${PROJECT_VERSION_PARTS}")
 list(GET PROJECT_VERSION_PARTS 0 PROJECT_VERSION_MAJOR)
 list(GET PROJECT_VERSION_PARTS 1 PROJECT_VERSION_MINOR)
 list(GET PROJECT_VERSION_PARTS 2 PROJECT_VERSION_PATCH)
@@ -36,6 +37,7 @@ if(WIN32)
 else()
     # Postfix of so's:
     set(PROJECT_DLLVERSION)
+    message(STATUS "项目版本：${PROJECT_DLLVERSION}")
     set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
     set(LIB_INSTALL_DIR lib CACHE STRING "Install location of libraries (e.g. lib32 or lib64 for multilib installations)")
     SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}/cmake/ /usr/${LIB_INSTALL_DIR}/cmake )
@@ -229,6 +231,7 @@ IF (BUILD_TESTS)
 ADD_SUBDIRECTORY(tests)
 ENDIF()
 
+add_subdirectory(mex)
 
 # ----------------------------------------------------------------------------
 # display status message for important variables

@@ -47,6 +47,9 @@
 !CMakeLists.txt
 !Makefile
 
+# docker
+!Dockerfile
+
 # 根据自己项目工程修改
 !*.in
 !*.txt

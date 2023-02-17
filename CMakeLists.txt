@@ -233,6 +233,8 @@ ENDIF()
 
 add_subdirectory(mex)
 
+add_subdirectory(c_file)
+
 # ----------------------------------------------------------------------------
 # display status message for important variables
 # ----------------------------------------------------------------------------

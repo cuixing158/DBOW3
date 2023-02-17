@@ -266,7 +266,7 @@ class MexFunction : public matlab::mex::Function {
            << db << endl;
         displayOnMATLAB(ss);
         QueryResults ret;
-        db.query(descriptors, ret, 10);
+        db.query(descriptors, ret, 10);  // 选取的是top 10
 
         return ret;
     }

@@ -12,6 +12,8 @@
 
 #include "loopDatabase_x86_64.h"
 
+Database db;
+
 vector<cv::Mat> loadFeatures(std::vector<string> path_to_images, string descriptor = "orb") throw(std::exception) {
     //select detector
     cv::Ptr<cv::Feature2D> fdetector;
@@ -149,7 +151,7 @@ void loopDatabase_x86_64_load(const char* databaseYmlGz) {
 void loopDatabase_x86_64_add(const unsigned char inImage[307200]) {
     int rows = 640;  // 注意MATLAB数组传入的是以列为优先的，与OpnenCV正好相反
     int cols = 480;
-    cv::Mat oriImg = cv::Mat(rows, cols, CV_8UC1, inImage);
+    cv::Mat oriImg = cv::Mat(rows, cols, CV_8UC1, (void*)inImage);
 
     std::string featureName = "orb";
     cv::Mat feature = loadFeatures(oriImg.t(), featureName);
@@ -160,7 +162,7 @@ void loopDatabase_x86_64_add(const unsigned char inImage[307200]) {
 void loopDatabase_x86_64_query(const unsigned char inImage[307200], double queryResult[20]) {
     int rows = 640;  // 注意MATLAB数组传入的是以列为优先的，与OpnenCV正好相反
     int cols = 480;
-    cv::Mat oriImg = cv::Mat(rows, cols, CV_8UC1, inImage);
+    cv::Mat oriImg = cv::Mat(rows, cols, CV_8UC1, (void*)inImage);
 
     QueryResults result = retrieveImages(oriImg.t(), db);
 

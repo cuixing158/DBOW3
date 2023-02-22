@@ -12,15 +12,15 @@
 
 #include "opencvAPI.h"
 
-// 对应OpenCV的cv::Mat转MATLAB uint8类型图像, //"marshalling"
+// "marshalling"
 void convertCVToMatrix(cv::Mat &srcImg, int rows, int cols, int channels, unsigned char dst[]);
 
-// 对应MATLAB uint8类型图像转cv::Mat, //"marshalling"
+//"marshalling"
 void convertToMat(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
 
 void convertToMatContinues(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
 
-// 对应OpenCV的cv::Mat转MATLAB uint8类型图像
+// 对应OpenCV的cv::Mat转MATLAB uint8类型或logical图像
 void convertCVToMatrix(cv::Mat &srcImg, int rows, int cols, int channels, unsigned char dst[]) {
     CV_Assert(srcImg.type() == CV_8UC1 || srcImg.type() == CV_8UC3);
     size_t elems = rows * cols;
@@ -37,7 +37,7 @@ void convertCVToMatrix(cv::Mat &srcImg, int rows, int cols, int channels, unsign
     }
 }
 
-// 对应MATLAB uint8类型图像转cv::Mat
+// 对应MATLAB uint8类型或者logical图像转cv::Mat，图像在内存中连续
 void convertToMatContinues(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg) {
     size_t elems = (size_t)rows * cols;
     // unsigned char *array = &inImg[0];
@@ -54,6 +54,7 @@ void convertToMatContinues(const unsigned char inImg[], int rows, int cols, int 
     }
 }
 
+// 对应MATLAB uint8类型或者logical图像转cv::Mat，图像在内存中不连续
 void convertToMat(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg) {
     size_t elems = (size_t)rows * cols;
     if (channels == 3) {
@@ -113,6 +114,8 @@ void imwarp(const cv::Mat srcImg, int rows, int cols, int channels, double tform
 
 // C类型与MATLAB内置类型对应
 // const unsigned char ---->uint8, coder.rref
+// const unsigned char ----> logical, coder.rref
+// const char ----> string,character vector,coder.rref
 // int ---->int32
 // double ----> double
 void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, double tformA[9], imref2d_ *outputView, unsigned char outImg[]) {
@@ -128,7 +131,7 @@ void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, doub
                             tformA[1], tformA[4], tformA[7],
                             tformA[2], tformA[5], tformA[8]);
         // 平移到可视化区域
-        transMat.colRange(2, 3) = transMat.colRange(2, 3) - (cv::Mat_<double>(3, 1) << outputView->XWorldLimits[0], outputView->YWorldLimits[0], 1.0);
+        transMat.colRange(2, 3) = transMat.colRange(2, 3) - (cv::Mat_<double>(3, 1) << outputView->XWorldLimits[0], outputView->YWorldLimits[0], 0.0);
 
         cv::warpPerspective(srcImg, dstImg, transMat, cv::Size(outputView->ImageSize[1], outputView->ImageSize[0]));
     } else {

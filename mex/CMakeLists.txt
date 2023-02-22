@@ -21,6 +21,7 @@ message(STATUS "我的子mex文件名字：${mainCreateDatabase}")
 add_library(${mainCreateDatabase} SHARED loopDatabase.cpp)
 target_include_directories(${mainCreateDatabase} PUBLIC ${PROJECT_SOURCE_DIR}/src ${Matlab_INCLUDE_DIRS})
 target_link_libraries(${mainCreateDatabase} ${PROJECT_NAME} ${MATLAB_LIBRARIES})
+message(STATUS "链接的库名为：${PROJECT_NAME}")
     if(WIN32)
         set_target_properties(${mainCreateDatabase} PROPERTIES OUTPUT_NAME "${mainCreateDatabase}.mexw64"
             PREFIX "" # 前缀为空

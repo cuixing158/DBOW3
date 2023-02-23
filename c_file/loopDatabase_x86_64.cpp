@@ -130,7 +130,6 @@ void loopDatabase_x86_64_init(const char* imageListFile) {
     DBoW3::Vocabulary voc(k, L, weight, score);
     voc.create(features);
 
-    db.clear();
     db.setVocabulary(voc, false, 0);  // false = do not use direct index
     // (so ignore the last param)
     // The direct index is useful if we want to retrieve the features that
@@ -143,7 +142,8 @@ void loopDatabase_x86_64_init(const char* imageListFile) {
 }
 
 void loopDatabase_x86_64_load(const char* databaseYmlGz) {
-    std::string dbFile = databaseYmlGz;
+    std::string dbFile(databaseYmlGz);
+    std::cout << "database name:" << dbFile << std::endl;
     db.load(dbFile);
 }
 

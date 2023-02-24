@@ -125,20 +125,21 @@ void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, doub
     // may be projective ,https://www.mathworks.com/help/images/matrix-representation-of-geometric-transformations.html#bvnhvs8
     double E = tformA[2];
     double F = tformA[5];
+    double matlabOutputViewOffset = 0.5f;
     if (std::abs(E) > 10 * std::numeric_limits<double>::epsilon() || std::abs(F) > 10 * std::numeric_limits<double>::epsilon())  // projective
     {
         cv::Mat transMat = (cv::Mat_<double>(3, 3) << tformA[0], tformA[3], tformA[6],
                             tformA[1], tformA[4], tformA[7],
                             tformA[2], tformA[5], tformA[8]);
         // 平移到可视化区域
-        transMat.colRange(2, 3) = transMat.colRange(2, 3) - (cv::Mat_<double>(3, 1) << outputView->XWorldLimits[0], outputView->YWorldLimits[0], 0.0);
+        transMat.colRange(2, 3) = transMat.colRange(2, 3) - (cv::Mat_<double>(3, 1) << outputView->XWorldLimits[0] - matlabOutputViewOffset, outputView->YWorldLimits[0] - matlabOutputViewOffset, 0.0);
 
         cv::warpPerspective(srcImg, dstImg, transMat, cv::Size(outputView->ImageSize[1], outputView->ImageSize[0]));
     } else {
         cv::Mat transMat = (cv::Mat_<double>(2, 3) << tformA[0], tformA[3], tformA[6],
                             tformA[1], tformA[4], tformA[7]);
         // 平移到可视化区域
-        transMat.colRange(2, 3) = transMat.colRange(2, 3) - (cv::Mat_<double>(2, 1) << outputView->XWorldLimits[0], outputView->YWorldLimits[0]);
+        transMat.colRange(2, 3) = transMat.colRange(2, 3) - (cv::Mat_<double>(2, 1) << outputView->XWorldLimits[0] - matlabOutputViewOffset, outputView->YWorldLimits[0] - matlabOutputViewOffset);
         cv::warpAffine(srcImg, dstImg, transMat, cv::Size(outputView->ImageSize[1], outputView->ImageSize[0]));
     }
     convertCVToMatrix(dstImg, dstImg.rows, dstImg.cols, dstImg.channels(), outImg);

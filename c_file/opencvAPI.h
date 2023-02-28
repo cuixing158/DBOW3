@@ -31,4 +31,6 @@ typedef struct imref2d {
 void imwarp(const cv::Mat srcImg, int rows, int cols, int channels, float tformA[9], imref2d outputView, cv::Mat &outImg);
 
 void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, double tformA[9], imref2d_ *outputView, unsigned char outImg[]);
+
+void imreadOpenCV(const char *imagePath, unsigned char outImg[]);
 #endif

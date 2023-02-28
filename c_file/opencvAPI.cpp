@@ -12,14 +12,6 @@
 
 #include "opencvAPI.h"
 
-// "marshalling"
-void convertCVToMatrix(cv::Mat &srcImg, int rows, int cols, int channels, unsigned char dst[]);
-
-//"marshalling"
-void convertToMat(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
-
-void convertToMatContinues(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
-
 // 对应OpenCV的cv::Mat转MATLAB uint8类型或logical图像
 void convertCVToMatrix(cv::Mat &srcImg, int rows, int cols, int channels, unsigned char dst[]) {
     CV_Assert(srcImg.type() == CV_8UC1 || srcImg.type() == CV_8UC3);
@@ -147,6 +139,7 @@ void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, doub
 
 void imreadOpenCV(const char *imagePath, unsigned char outImg[]) {
     std::string imgPath(imagePath);
+    std::cout << "current fusing this image:" << imgPath << std::endl;
     cv::Mat srcImg = cv::imread(imgPath, cv::IMREAD_COLOR);
     cv::Mat gray;
     cv::cvtColor(srcImg, gray, cv::COLOR_BGR2GRAY);

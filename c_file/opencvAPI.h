@@ -20,13 +20,21 @@
 #include <vector>
 
 // OpenCV
-#include "opencv2/opencv.hpp"
-
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
 typedef struct imref2d {
     double XWorldLimits[2];
     double YWorldLimits[2];
     double ImageSize[2];
 } imref2d_;
+
+// "marshalling"
+void convertCVToMatrix(cv::Mat &srcImg, int rows, int cols, int channels, unsigned char dst[]);
+
+//"marshalling"
+void convertToMat(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
+
+void convertToMatContinues(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
 
 void imwarp(const cv::Mat srcImg, int rows, int cols, int channels, float tformA[9], imref2d outputView, cv::Mat &outImg);
 

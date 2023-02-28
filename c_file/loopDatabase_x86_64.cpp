@@ -143,8 +143,9 @@ void loopDatabase_x86_64_init(const char* imageListFile) {
 
 void loopDatabase_x86_64_load(const char* databaseYmlGz) {
     std::string dbFile(databaseYmlGz);
-    std::cout << "database name:" << dbFile << std::endl;
+    std::cout << "loading database,please wait... ,name:" << dbFile << std::endl;
     db.load(dbFile);
+    std::cout << "load finished!" << std::endl;
 }
 
 // 480*640=307200, 从matlab传入进来的为480*640 单通道uint8图像

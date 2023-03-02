@@ -33,7 +33,7 @@ void convertCVToMatrix(cv::Mat &srcImg, int rows, int cols, int channels, unsign
 void convertToMatContinues(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg) {
     size_t elems = (size_t)rows * cols;
     // unsigned char *array = &inImg[0];
-    unsigned char *array = (unsigned char *)inImg[0];
+    unsigned char *array = (unsigned char *)inImg;
     if (channels == 3) {
         cv::Mat matR = cv::Mat(cols, rows, CV_8UC1, array);  //inImg在内存中必须连续
         cv::Mat matG = cv::Mat(cols, rows, CV_8UC1, array + elems);

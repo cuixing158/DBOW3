@@ -14,7 +14,7 @@
 
 Database db;
 
-vector<cv::Mat> loadFeatures(std::vector<string> path_to_images, string descriptor = "orb") throw(std::exception) {
+vector<cv::Mat> loadFeatures(std::vector<string> path_to_images, string descriptor = "orb") {
     //select detector
     cv::Ptr<cv::Feature2D> fdetector;
     if (descriptor == "orb")
@@ -51,7 +51,7 @@ vector<cv::Mat> loadFeatures(std::vector<string> path_to_images, string descript
     return features;
 }
 
-cv::Mat loadFeatures(cv::Mat srcImg, string descriptor = "orb") throw(std::exception) {
+cv::Mat loadFeatures(cv::Mat srcImg, string descriptor = "orb") {
     //select detector
     cv::Ptr<cv::Feature2D> fdetector;
     if (descriptor == "orb")

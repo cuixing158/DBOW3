@@ -139,7 +139,6 @@ void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, doub
 
 void imreadOpenCV(const char *imagePath, unsigned char outImg[]) {
     std::string imgPath(imagePath);
-    std::cout << "current fusing this image:" << imgPath << std::endl;
     cv::Mat srcImg = cv::imread(imgPath, cv::IMREAD_COLOR);
     cv::Mat gray;
     cv::cvtColor(srcImg, gray, cv::COLOR_BGR2GRAY);

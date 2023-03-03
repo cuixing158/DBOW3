@@ -1,54 +1,9 @@
+# DBOW3回环检测库(图像相似度检测)
 
+# Overview
 
-DBoW3
-=====
+用于SLAM中回环检测，返回图片的相似度top-k排序，本库支持MATLAB中`mex`文件构建，C/C++代码生成直接映射到此库源代码，使用方便。
 
-## 
-## For an improved version of this project, please see FBOW https://github.com/rmsalinas/fbow. 
+## 说明
 
-
-
-
-DBoW3 is an improved version of the DBow2 library, an open source C++ library for indexing and converting images into a bag-of-word representation. It implements a hierarchical tree for approximating nearest neighbours in the image feature space and creating a visual vocabulary. DBoW3 also implements an image database with inverted and direct files to index images and enabling quick queries and feature comparisons. The main differences with the previous DBow2 library are:
-
-  * DBoW3 only requires OpenCV.  DBoW2 dependency of DLIB is been removed.
-  * DBoW3 is able to use both binary and floating point descriptors out of the box. No need to reimplement any class for any descriptor.
-  * DBoW3 compiles both in linux and windows.  
-  * Some pieces of code have been rewritten to optimize speed. The interface of DBoW3 has been simplified.
-  * Possibility of using binary files. Binary files are 4-5 times faster to load/save than yml. Also, they can be compressed.
-  * Compatible with DBoW2 yml files
-
-## 
-## Citing
-
-If you use this software in an academic work, please cite:
-```@online{DBoW3, author = {Rafael Muñoz-Salinas}, 
-   title = {{DBoW3} DBoW3}, 
-  year = 2017, 
-  url = {https://github.com/rmsalinas/DBow3}, 
-  urldate = {2017-02-17} 
- } 
-```
-
-
-## Installation notes
- 
-DBoW3 requires OpenCV only.
-
-For compiling the utils/demo_general.cpp you must compile against OpenCV 3. If you have installed the contrib_modules, use cmake option -DUSE_CONTRIB=ON to enable SURF.
-
-## How to use
-
-Check utils/demo_general.cpp
-
-### Classes 
-
-DBoW3 has two main classes: `Vocabulary` and `Database`. These implement the visual vocabulary to convert images into bag-of-words vectors and the database to index images.
-See utils/demo_general.cpp for an example
-
-### Load/Store Vocabulary
-
-The file orbvoc.dbow3 is the ORB vocabulary in ORBSLAM2 but in binary format of DBoW3:  https://github.com/raulmur/ORB_SLAM2/tree/master/Vocabulary
- 
-
-
+本库程序绝大部分来源于[官方](./README_official.md)的repo，额外增加了`mex/`、`c_file/`文件目录，分别用于`mex`构建和C/C++代码生成的入口函数。

@@ -140,6 +140,10 @@ void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, doub
 void imreadOpenCV(const char *imagePath, unsigned char outImg[]) {
     std::string imgPath(imagePath);
     cv::Mat srcImg = cv::imread(imgPath, cv::IMREAD_COLOR);
+    if (srcImg.empty()) {
+        std::runtime_error("read image is empty!");
+    }
+
     cv::Mat gray;
     cv::cvtColor(srcImg, gray, cv::COLOR_BGR2GRAY);
     convertCVToMatrix(gray, gray.rows, gray.cols, gray.channels(), outImg);

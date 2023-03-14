@@ -20,8 +20,10 @@
 #include <vector>
 
 // OpenCV
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/imgproc.hpp"
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+
 typedef struct imref2d {
     double XWorldLimits[2];
     double YWorldLimits[2];
@@ -41,4 +43,6 @@ void imwarp(const cv::Mat srcImg, int rows, int cols, int channels, float tformA
 void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, double tformA[9], imref2d_ *outputView, unsigned char outImg[]);
 
 void imreadOpenCV(const char *imagePath, unsigned char outImg[]);
+
+void alphaBlendOpenCV(const unsigned char downImg[], int rows, int cols, int channels, const unsigned char topImg[], const unsigned char maskImg[], int maskImgRows, int maskImgCols, int maskImgChannels, int startX, int startY, unsigned char outImg[]);
 #endif

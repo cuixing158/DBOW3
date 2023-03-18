@@ -38,6 +38,8 @@ void convertToMat(const unsigned char inImg[], int rows, int cols, int channels,
 
 void convertToMatContinues(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
 
+void convertToMatContinues(const bool inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
+
 void imwarp(const cv::Mat srcImg, int rows, int cols, int channels, float tformA[9], imref2d outputView, cv::Mat &outImg);
 
 void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, double tformA[9], imref2d_ *outputView, unsigned char outImg[]);
@@ -45,4 +47,6 @@ void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, doub
 void imreadOpenCV(const char *imagePath, unsigned char outImg[]);
 
 void alphaBlendOpenCV(const unsigned char downImg[], int rows, int cols, int channels, const unsigned char topImg[], const unsigned char maskImg[], int maskImgRows, int maskImgCols, int maskImgChannels, int startX, int startY, unsigned char outImg[]);
+
+void alphaBlendOpenCV(const unsigned char downImg[], int rows, int cols, int channels, const unsigned char topImg[], const bool maskImg[], int maskImgRows, int maskImgCols, int maskImgChannels, int startX, int startY, unsigned char outImg[]);
 #endif

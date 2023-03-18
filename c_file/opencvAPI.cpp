@@ -29,10 +29,25 @@ void convertCVToMatrix(cv::Mat &srcImg, int rows, int cols, int channels, unsign
     }
 }
 
-// 对应MATLAB uint8类型或者logical图像转cv::Mat，图像在内存中连续
+// 对应MATLAB uint8类型图像转cv::Mat，图像在内存中连续
 void convertToMatContinues(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg) {
     size_t elems = (size_t)rows * cols;
-    // unsigned char *array = &inImg[0];
+    unsigned char *array = (unsigned char *)inImg;
+    if (channels == 3) {
+        cv::Mat matR = cv::Mat(cols, rows, CV_8UC1, array);  //inImg在内存中必须连续
+        cv::Mat matG = cv::Mat(cols, rows, CV_8UC1, array + elems);
+        cv::Mat matB = cv::Mat(cols, rows, CV_8UC1, array + 2 * elems);
+        std::vector<cv::Mat> matBGR = {matB.t(), matG.t(), matR.t()};
+        cv::merge(matBGR, matBigImg);
+    } else {
+        matBigImg = cv::Mat(cols, rows, CV_8UC1, (unsigned char *)inImg);
+        matBigImg = matBigImg.t();
+    }
+}
+
+// 对应MATLAB logical图像转cv::Mat，图像在内存中连续
+void convertToMatContinues(const bool inImg[], int rows, int cols, int channels, cv::Mat &matBigImg) {
+    size_t elems = (size_t)rows * cols;
     unsigned char *array = (unsigned char *)inImg;
     if (channels == 3) {
         cv::Mat matR = cv::Mat(cols, rows, CV_8UC1, array);  //inImg在内存中必须连续
@@ -141,7 +156,7 @@ void imreadOpenCV(const char *imagePath, unsigned char outImg[]) {
     std::string imgPath(imagePath);
     cv::Mat srcImg = cv::imread(imgPath, cv::IMREAD_COLOR);
     if (srcImg.empty()) {
-        std::runtime_error("read image is empty!");
+        std::runtime_error("read image:" + imgPath + " is empty!");
     }
 
     cv::Mat gray;
@@ -150,6 +165,18 @@ void imreadOpenCV(const char *imagePath, unsigned char outImg[]) {
 }
 
 void alphaBlendOpenCV(const unsigned char downImg[], int rows, int cols, int channels, const unsigned char topImg[], const unsigned char maskImg[], int maskImgRows, int maskImgCols, int maskImgChannels, int startX, int startY, unsigned char outImg[]) {
+    cv::Mat matDownImg, matTopImg, matMaskImg;
+    convertToMatContinues(downImg, rows, cols, channels, matDownImg);
+    convertToMatContinues(topImg, maskImgRows, maskImgCols, maskImgChannels, matTopImg);
+    convertToMatContinues(maskImg, maskImgRows, maskImgCols, maskImgChannels, matMaskImg);
+    matMaskImg.convertTo(matMaskImg, matMaskImg.type(), 255);                                                // note: matlab logical,{0,1}
+    cv::Rect roi = cv::Rect(startX - 1, startY - 1, maskImgCols, maskImgRows) & cv::Rect(0, 0, cols, rows);  // matlab 0-based,c/c++ 1-based
+    cv::Rect roiMask = cv::Rect(0, 0, roi.width, roi.height);
+    matTopImg(roiMask).copyTo(matDownImg(roi), matMaskImg(roiMask));
+    convertCVToMatrix(matDownImg, rows, cols, channels, outImg);
+}
+
+void alphaBlendOpenCV(const unsigned char downImg[], int rows, int cols, int channels, const unsigned char topImg[], const bool maskImg[], int maskImgRows, int maskImgCols, int maskImgChannels, int startX, int startY, unsigned char outImg[]) {
     cv::Mat matDownImg, matTopImg, matMaskImg;
     convertToMatContinues(downImg, rows, cols, channels, matDownImg);
     convertToMatContinues(topImg, maskImgRows, maskImgCols, maskImgChannels, matTopImg);

@@ -107,6 +107,15 @@ QueryResults retrieveImages(cv::Mat queryImage, Database& db) {
     return ret;
 }
 
+QueryResults retrieveFeatures(cv::Mat queryFeatures, Database& db) {
+    std::cout << "Database information: " << std::endl
+              << db << std::endl;
+    QueryResults ret;
+    db.query(queryFeatures, ret, 10);  // 选取的是top 10
+
+    return ret;
+}
+
 // 剩余函数为供MATLAB使用
 void loopDatabase_x86_64_init(const char* imageListFile) {
     std::vector<string> images;
@@ -149,9 +158,8 @@ void loopDatabase_x86_64_load(const char* databaseYmlGz) {
 }
 
 // 480*640=307200, 从matlab传入进来的为480*640 单通道uint8图像
-void loopDatabase_x86_64_add(const unsigned char inImage[307200]) {
-    int rows = 640;  // 注意MATLAB数组传入的是以列为优先的，与OpnenCV正好相反
-    int cols = 480;
+void loopDatabase_x86_64_add_image(const unsigned char* inImage, int rows, int cols) {
+    // 注意MATLAB数组传入的是以列为优先的，与OpnenCV正好相反
     cv::Mat oriImg = cv::Mat(rows, cols, CV_8UC1, (void*)inImage);
 
     std::string featureName = "orb";
@@ -159,13 +167,33 @@ void loopDatabase_x86_64_add(const unsigned char inImage[307200]) {
     db.add(feature);
 }
 
+void loopDatabase_x86_64_add_features(const unsigned char* inFeatures, int rows, int cols) {
+    cv::Mat matlabORBFeatures = cv::Mat(cols, rows, CV_8UC1, (unsigned char*)inFeatures);
+    db.add(matlabORBFeatures.t());
+}
+
 // 返回top10，10*2大小数组给MATLAB，第一列为queryID,第二列为score
-void loopDatabase_x86_64_query(const unsigned char inImage[307200], double queryResult[20]) {
-    int rows = 640;  // 注意MATLAB数组传入的是以列为优先的，与OpnenCV正好相反
-    int cols = 480;
-    cv::Mat oriImg = cv::Mat(rows, cols, CV_8UC1, (void*)inImage);
+void loopDatabase_x86_64_query_image(const unsigned char* inImage, int rows, int cols, double queryResult[20]) {
+    cv::Mat oriImg = cv::Mat(cols, rows, CV_8UC1, (void*)inImage);
 
     QueryResults result = retrieveImages(oriImg.t(), db);
+
+    //step3, convert to matlab
+    // TypedArray<double_t> matlabResults = factory.createArray<double>({result.size(), 2});
+    QueryResults::const_iterator qit;
+    size_t rowIdx = 0;
+    for (qit = result.begin(); qit != result.end(); ++qit) {
+        queryResult[rowIdx] = (double)qit->Id + 1;      // matlab 索引从1开始
+        queryResult[rowIdx + 10] = (double)qit->Score;  // 注意前面程序用的是top10
+        rowIdx++;
+    }
+}
+
+// 返回top10，10*2大小数组给MATLAB，第一列为queryID,第二列为score
+void loopDatabase_x86_64_query_features(const unsigned char* inFeatures, int rows, int cols, double queryResult[20]) {
+    cv::Mat oriFeatures = cv::Mat(cols, rows, CV_8UC1, (void*)inFeatures);
+
+    QueryResults result = retrieveFeatures(oriFeatures.t(), db);
 
     //step3, convert to matlab
     // TypedArray<double_t> matlabResults = factory.createArray<double>({result.size(), 2});

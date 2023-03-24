@@ -24,29 +24,42 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 
-typedef struct imref2d {
+typedef struct imref2d_ {
     double XWorldLimits[2];
     double YWorldLimits[2];
     double ImageSize[2];
 } imref2d_;
 
+typedef struct outputImgAndImref2d {
+    imref2d_ ref2d;
+    unsigned char outImg[];
+} outputImgAndImref2d;
+
 // "marshalling"
-void convertCVToMatrix(cv::Mat &srcImg, int rows, int cols, int channels, unsigned char dst[]);
+template <typename T>
+void convertCVToMatrix(cv::Mat &srcImg, int rows, int cols, int channels, T *dst);
 
 //"marshalling"
 void convertToMat(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
 
-void convertToMatContinues(const unsigned char inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
+template <typename T>
+void convertToMatContinues(const T *inImg, int rows, int cols, int channels, cv::Mat &matBigImg);
 
-void convertToMatContinues(const bool inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
+// void convertToMatContinues(const bool inImg[], int rows, int cols, int channels, cv::Mat &matBigImg);
 
-void imwarp(const cv::Mat srcImg, int rows, int cols, int channels, float tformA[9], imref2d outputView, cv::Mat &outImg);
+void imwarp(const cv::Mat srcImg, int rows, int cols, int channels, double tformA[9], imref2d_ outputView, cv::Mat &outImg);
 
-void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, double tformA[9], imref2d_ *outputView, unsigned char outImg[]);
+#ifdef USE_OUTPUT_IMAGEREF
+// void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, double tformA[9], imref2d_ *outputView, outputImgAndImref2d *ot);
+void imwarp2(const unsigned char inImg[], int rows, int cols, int channels, double tformA[9], imref2d_ *outputView, unsigned char outImg[], imref2d_ *ot);
+#endif
+
+template <typename T>
+void imwarp2(const T *inImg, int rows, int cols, int channels, double tformA[9], imref2d_ *outputView, T *outImg);
 
 void imreadOpenCV(const char *imagePath, unsigned char outImg[]);
 
-void alphaBlendOpenCV(const unsigned char downImg[], int rows, int cols, int channels, const unsigned char topImg[], const unsigned char maskImg[], int maskImgRows, int maskImgCols, int maskImgChannels, int startX, int startY, unsigned char outImg[]);
+template <typename T1, typename T2>
+void alphaBlendOpenCV(const unsigned char downImg[], int rows, int cols, int channels, const unsigned char topImg[], const T1 *maskImg, int maskImgRows, int maskImgCols, int maskImgChannels, int startX, int startY, T2 *outImg);
 
-void alphaBlendOpenCV(const unsigned char downImg[], int rows, int cols, int channels, const unsigned char topImg[], const bool maskImg[], int maskImgRows, int maskImgCols, int maskImgChannels, int startX, int startY, unsigned char outImg[]);
 #endif

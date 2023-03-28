@@ -117,7 +117,7 @@ QueryResults retrieveFeatures(cv::Mat queryFeatures, Database& db) {
 }
 
 // 剩余函数为供MATLAB使用
-void loopDatabase_x86_64_init(const char* imageListFile) {
+void loopDatabase_x86_64_init_images(const char* imageListFile) {
     std::vector<string> images;
     std::string line;
     ifstream fid(imageListFile, std::ios::in);
@@ -135,9 +135,10 @@ void loopDatabase_x86_64_init(const char* imageListFile) {
     const WeightingType weight = TF_IDF;
     const ScoringType score = L1_NORM;
 
-    std::cout << "Create vocabulary,please wait ..." << std::endl;
+    std::cout << "From images,Create vocabulary,please wait ..." << std::endl;
     DBoW3::Vocabulary voc(k, L, weight, score);
     voc.create(features);
+    cout << "... done!" << endl;
 
     db.setVocabulary(voc, false, 0);  // false = do not use direct index
     // (so ignore the last param)
@@ -145,9 +146,39 @@ void loopDatabase_x86_64_init(const char* imageListFile) {
     // belong to some vocabulary node.
     // db creates a copy of the vocabulary, we may get rid of "voc" now
 
-    std::cout << "Vocabulary information: " << std::endl
-              << voc << std::endl;
+    // std::cout << "Vocabulary information: " << std::endl
+    //           << voc << std::endl;
     db.save("database.yml.gz");
+}
+
+void loopDatabase_x86_64_init_features(const unsigned char* inImageOrFeatures, int rows, int cols, bool isOver) {
+    static std::vector<cv::Mat> features;
+    if (isOver) {
+        // branching factor and depth levels
+        const int k = 10;
+        const int L = 4;
+        const WeightingType weight = TF_IDF;
+        const ScoringType score = L1_NORM;
+
+        std::cout << "From features,Create vocabulary,please wait ..." << std::endl;
+        DBoW3::Vocabulary voc(k, L, weight, score);
+        voc.create(features);
+
+        db.setVocabulary(voc, false, 0);  // false = do not use direct index
+        // (so ignore the last param)
+        // The direct index is useful if we want to retrieve the features that
+        // belong to some vocabulary node.
+        // db creates a copy of the vocabulary, we may get rid of "voc" now
+
+        std::cout << "Vocabulary information: " << std::endl
+                  << voc << std::endl;
+        db.save("database.yml.gz");
+        features.clear();
+    } else {
+        cv::Mat oriFeatures = cv::Mat(cols, rows, CV_8UC1, (void*)inImageOrFeatures);
+        assert(cols == 32);
+        features.push_back(oriFeatures.t());
+    }
 }
 
 void loopDatabase_x86_64_load(const char* databaseYmlGz) {
@@ -160,7 +191,7 @@ void loopDatabase_x86_64_load(const char* databaseYmlGz) {
 // 480*640=307200, 从matlab传入进来的为480*640 单通道uint8图像
 void loopDatabase_x86_64_add_image(const unsigned char* inImage, int rows, int cols) {
     // 注意MATLAB数组传入的是以列为优先的，与OpnenCV正好相反
-    cv::Mat oriImg = cv::Mat(rows, cols, CV_8UC1, (void*)inImage);
+    cv::Mat oriImg = cv::Mat(cols, rows, CV_8UC1, (void*)inImage);
 
     std::string featureName = "orb";
     cv::Mat feature = loadFeatures(oriImg.t(), featureName);

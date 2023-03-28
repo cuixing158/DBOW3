@@ -160,7 +160,7 @@ void testDatabase(const vector<cv::Mat> &features) {
     for (size_t i = 0; i < features.size(); i++)
         db.add(features[i]);
 
-    cout << "... done!" << endl;
+    cout << "add features done!" << endl;
 
     cout << "Database information: " << endl
          << db << endl;
@@ -206,9 +206,9 @@ void saveDatabase(const vector<cv::Mat> &features, std::string dataBaseFile) {
     voc.create(features);
     cout << "... done!" << endl;
 
-    cout << "Vocabulary information: " << endl
-         << voc << endl
-         << endl;
+    // cout << "Vocabulary information: " << endl
+    //      << voc << endl
+    //      << endl;
 
     Database db(voc, false, 0);  // false = do not use direct index
     // (so ignore the last param)
@@ -220,7 +220,7 @@ void saveDatabase(const vector<cv::Mat> &features, std::string dataBaseFile) {
     for (size_t i = 0; i < features.size(); i++)
         db.add(features[i]);
 
-    cout << "... done!" << endl;
+    cout << "add features done!" << endl;
 
     cout << "Database information: " << endl
          << db << endl;
@@ -240,11 +240,12 @@ int main(int argc, char **argv) {
         //     cerr << "Usage:  descriptor_name     image0 image1 ... \n\t descriptors:brisk,surf,orb ,akaze(only if using opencv 3)" << endl;
         //     return -1;
         // }
-        string projectDir = "/opt_disk2/rd22946/vscode_work/cppProjects/fbow-master/";
+        // string projectDir = "/opt_disk2/rd22946/vscode_work/cppProjects/fbow-master/";
+        // ls -R /opt_disk2/rd22946/matlab_works/buildMapping/test/database/*.*g>imagePathList.txt
         string descriptor = "orb";
-        string outputFile = projectDir + "data/myorbImgsFeatures.feat";
-        string pathName = projectDir + "imagePath.txt";
-        string dataBaseFile = projectDir + "data/small_db.yml.gz";
+        // string outputFile = projectDir + "data/myorbImgsFeatures.feat";
+        string pathName = "/opt_disk2/rd22946/matlab_works/buildMapping/test/imagePathList.txt";
+        string dataBaseFile = "./small_db.yml.gz";
 
         std::vector<string> images;
         string line;

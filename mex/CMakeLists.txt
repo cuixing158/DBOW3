@@ -1,27 +1,32 @@
 
 # Matlab package
-find_package(Matlab REQUIRED) # https://cmake.org/cmake/help/latest/module/FindMatlab.html
+find_package(Matlab) # https://cmake.org/cmake/help/latest/module/FindMatlab.html
 
 if(Matlab_FOUND)
     message(STATUS "matlab have found")
 else()
+    # message(STATUS "can't use find_package to find matlab")
     if(WIN32)
         set(Matlab_ROOT_DIR "C:/Program Files/MATLAB/R2022b")
     else()
-        set(Matlab_ROOT_DIR "/opt_disk2/rd22946/MATLAB")
+        set(Matlab_ROOT_DIR "/opt_disk2/rd22946/MATLAB/R2023a")
     endif(WIN32)
 
     find_package(Matlab REQUIRED)
+    if(NOT Matlab_FOUND)
+        message(FATAL "can't find matlab")
+    endif(NOT Matlab_FOUND)
+    
 endif(Matlab_FOUND)
 
 if(OPENCV_VERSION_3)
 set(mainCreateDatabase createDatabase)
 message(STATUS "我的子mex文件名字：${mainCreateDatabase}")
 
-add_library(${mainCreateDatabase} SHARED loopDatabase.cpp)
+add_library(${mainCreateDatabase} SHARED ${CMAKE_CURRENT_SOURCE_DIR}/loopDatabase.cpp)
 target_include_directories(${mainCreateDatabase} PUBLIC ${PROJECT_SOURCE_DIR}/src ${Matlab_INCLUDE_DIRS})
 target_link_libraries(${mainCreateDatabase} ${PROJECT_NAME} ${MATLAB_LIBRARIES})
-message(STATUS "链接的库名为：${PROJECT_NAME}")
+message(STATUS "链接的库名为：${PROJECT_NAME},matlab包含的头文件有:${Matlab_INCLUDE_DIRS}")
     if(WIN32)
         set_target_properties(${mainCreateDatabase} PROPERTIES OUTPUT_NAME "${mainCreateDatabase}.mexw64"
             PREFIX "" # 前缀为空

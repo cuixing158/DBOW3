@@ -61,7 +61,7 @@
 #忽略特殊文件，一般是当前目录下的文件(当前目录不能忽略)
 /yourSpecify.cpp
 /yourSpecify.h
-
+/*.txt
 
 
 

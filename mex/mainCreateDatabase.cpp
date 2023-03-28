@@ -100,7 +100,7 @@ void saveDatabase(const vector<cv::Mat>& features, std::string dataBaseFile) {
     for (size_t i = 0; i < features.size(); i++)
         db.add(features[i]);
 
-    cout << "... done!" << endl;
+    cout << "add features done!" << endl;
 
     cout << "Database information: " << endl
          << db << endl;

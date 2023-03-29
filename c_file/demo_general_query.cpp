@@ -1,6 +1,6 @@
 /**
-* @file        :loopDatabase_x86_64.h
-* @brief       :用于测试是否与MATLAB一致
+* @file        :demo_general_query.cpp
+* @brief       :用于测试是否与MATLAB一致,结论：达到一致
 * @details     :与mex/loopDatabase.cpp功能一致，提供"init","load","add","query"四个模式，MATLAB数组或者字符串string可以直接传入本文件使用
 * @date        :2023/03/28 10:46:42
 * @author      :cuixingxing(cuixingxing150@gmail.com)

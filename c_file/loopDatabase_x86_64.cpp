@@ -117,7 +117,7 @@ QueryResults retrieveFeatures(cv::Mat queryFeatures, Database& db) {
 }
 
 // 剩余函数为供MATLAB使用
-void loopDatabase_x86_64_init_images(const char* imageListFile) {
+void loopDatabase_x86_64_init_images(const char* imageListFile, const char* saveDataBaseYmlGz) {
     std::vector<string> images;
     std::string line;
     ifstream fid(imageListFile, std::ios::in);
@@ -146,12 +146,14 @@ void loopDatabase_x86_64_init_images(const char* imageListFile) {
     // belong to some vocabulary node.
     // db creates a copy of the vocabulary, we may get rid of "voc" now
 
-    // std::cout << "Vocabulary information: " << std::endl
-    //           << voc << std::endl;
-    db.save("database.yml.gz");
+    std::string databaseFile(saveDataBaseYmlGz);
+    std::cout << "Vocabulary information: " << std::endl
+              << voc << std::endl
+              << "have saved this path:" << databaseFile << std::endl;
+    db.save(databaseFile);
 }
 
-void loopDatabase_x86_64_init_features(const unsigned char* inImageOrFeatures, int rows, int cols, bool isOver) {
+void loopDatabase_x86_64_init_features(const unsigned char* inImageOrFeatures, int rows, int cols, bool isOver, const char* saveDataBaseYmlGz) {
     static std::vector<cv::Mat> features;
     if (isOver) {
         // branching factor and depth levels
@@ -170,9 +172,11 @@ void loopDatabase_x86_64_init_features(const unsigned char* inImageOrFeatures, i
         // belong to some vocabulary node.
         // db creates a copy of the vocabulary, we may get rid of "voc" now
 
+        std::string databaseFile(saveDataBaseYmlGz);
         std::cout << "Vocabulary information: " << std::endl
-                  << voc << std::endl;
-        db.save("database.yml.gz");
+                  << voc << std::endl
+                  << "have saved this path:" << databaseFile << std::endl;
+        db.save(databaseFile);
         features.clear();
     } else {
         cv::Mat oriFeatures = cv::Mat(cols, rows, CV_8UC1, (void*)inImageOrFeatures);

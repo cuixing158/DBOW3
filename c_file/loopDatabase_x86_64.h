@@ -41,8 +41,8 @@ using namespace std;
 extern Database db;
 
 /** Function Declarations */
-void loopDatabase_x86_64_init_images(const char* imageListFile);
-void loopDatabase_x86_64_init_features(const unsigned char* inImageOrFeatures, int rows, int cols, bool isOver);
+void loopDatabase_x86_64_init_images(const char* imageListFile, const char* saveDataBaseFile);
+void loopDatabase_x86_64_init_features(const unsigned char* inImageOrFeatures, int rows, int cols, bool isOver, const char* saveDataBaseFile);
 
 void loopDatabase_x86_64_load(const char* databaseYmlGz);
 

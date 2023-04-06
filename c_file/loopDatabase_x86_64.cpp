@@ -99,8 +99,8 @@ QueryResults retrieveImages(cv::Mat queryImage, Database& db) {
     if (queryImage.empty()) throw std::runtime_error("Could not open image");
     fdetector->detectAndCompute(queryImage, cv::Mat(), keypoints, descriptors);
 
-    std::cout << "Database information: " << std::endl
-              << db << std::endl;
+    // std::cout << "Database information: " << std::endl
+    //           << db << std::endl;
     QueryResults ret;
     db.query(descriptors, ret, 10);  // 选取的是top 10
 
@@ -108,8 +108,8 @@ QueryResults retrieveImages(cv::Mat queryImage, Database& db) {
 }
 
 QueryResults retrieveFeatures(cv::Mat queryFeatures, Database& db) {
-    std::cout << "Database information: " << std::endl
-              << db << std::endl;
+    // std::cout << "Database information: " << std::endl
+    //           << db << std::endl;
     QueryResults ret;
     db.query(queryFeatures, ret, 10);  // 选取的是top 10
 

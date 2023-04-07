@@ -14,6 +14,13 @@
 
 Database db;
 
+typedef struct imageViewSt {
+    cv::Mat descriptors;
+    std::vector<cv::Point2d> keyPoints;
+} imageViewSt;
+std::vector<cv::Mat> descriptors;
+std::vector<std::vector<cv::Point2d> > keypoints;
+
 vector<cv::Mat> loadFeatures(std::vector<string> path_to_images, string descriptor = "orb") {
     //select detector
     cv::Ptr<cv::Feature2D> fdetector;
@@ -183,6 +190,90 @@ void loopDatabase_x86_64_init_features(const unsigned char* inImageOrFeatures, i
         assert(cols == 32);
         features.push_back(oriFeatures.t());
     }
+}
+
+void loopDatabase_writeStep_imst(const unsigned char* inImageOrFeatures, int rows, int cols, const double* keyptsX, const double* keyptsY, bool isOver, const char* saveImageViewStFile) {
+    static std::vector<imageViewSt> imgSt;
+    if (isOver) {
+        std::cout << "Saving imageViewSt,please wait ..." << std::endl;
+        std::string imgStFile(saveImageViewStFile);
+        cv::FileStorage fs(imgStFile, cv::FileStorage::WRITE);
+        if (!fs.isOpened()) {
+            cerr << "failed to open file " + imgStFile << endl;
+        }
+        fs << "numbers" << (int)imgSt.size();
+        fs << "descriptors"
+           << "{";
+        for (size_t i = 0; i < imgSt.size(); i++) {
+            fs << "descriptors_" + std::to_string(i) << imgSt[i].descriptors;
+        }
+        fs << "}";
+        fs << "keyPoints"
+           << "{";
+        for (size_t i = 0; i < imgSt.size(); i++) {
+            fs << "keyPoints_" + std::to_string(i) << imgSt[i].keyPoints;
+        }
+        std::cout << "Done" << std::endl;
+        fs.release();
+        imgSt.clear();
+    } else {
+        cv::Mat oriFeatures = cv::Mat(cols, rows, CV_8UC1, (void*)inImageOrFeatures);
+        std::vector<cv::Point2d> keypts;
+        for (size_t i = 0; i < rows; i++) {
+            keypts.push_back(cv::Point2d(keyptsX[i], keyptsY[i]));
+        }
+        imgSt.push_back(imageViewSt{oriFeatures, keypts});
+    }
+}
+
+void loopDatabase_readStep_imst_meta(const char* saveImageViewStFile, int rows, int cols, bool isOver) {
+    static int idx = 0;
+    static int numbers = 0;
+    if (idx == 0) {
+        std::string imgStFile(saveImageViewStFile);
+        cv::FileStorage fs(imgStFile, cv::FileStorage::READ);
+        if (!fs.isOpened()) {
+            cerr << "failed to open file " + imgStFile << endl;
+        }
+        fs["numbers"] >> numbers;
+        cv::FileNode descriptorsNode = fs["descriptiors"];
+        cv::FileNode keyPointsNode = fs["keyPoints"];
+        for (auto iter = descriptorsNode.begin(); iter != descriptorsNode.end(); iter++) {
+            cv::Mat temp;
+            *iter >> temp;
+            descriptors.push_back(temp);
+        }
+        for (auto iter = keyPointsNode.begin(); iter != keyPointsNode.end(); iter++) {
+            std::vector<cv::Point2d> temp;
+            *iter >> temp;
+            keypoints.push_back(temp);
+        }
+        fs.release();
+    }
+
+    if (idx < numbers) {
+        rows = descriptors[idx].rows;
+        cols = descriptors[idx].cols;
+        isOver = false;
+    } else {
+        rows = 0;
+        cols = 0;
+        descriptors.clear();
+        keypoints.clear();
+        isOver = true;
+    }
+    idx++;
+}
+
+void loopDatabase_readStep_imst(unsigned char* inImageOrFeatures, double* keyptsX, double* keyptsY) {
+    static size_t idx = 0;
+    cv::Mat oriFeat = descriptors[idx];
+    convertCVToMatrix(oriFeat, oriFeat.rows, oriFeat.cols, 1, inImageOrFeatures);
+    for (size_t i = 0; i < oriFeat.rows; i++) {
+        keyptsX[i] = keypoints[idx][i].x;
+        keyptsY[i] = keypoints[idx][i].y;
+    }
+    idx++;
 }
 
 void loopDatabase_x86_64_load(const char* databaseYmlGz) {

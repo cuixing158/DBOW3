@@ -49,7 +49,7 @@ void loopDatabase_x86_64_init_features(const unsigned char* inImageOrFeatures, i
 void loopDatabase_writeStep_imst(const unsigned char* inImageOrFeatures, int rows, int cols, const double* keyptsX, const double* keyptsY, bool isOver, const char* saveImageViewStFile);
 
 // use follow two function together.
-void loopDatabase_readStep_imst_meta(const char* saveImageViewStFile, int rows, int cols, bool isOver);
+void loopDatabase_readStep_imst_meta(const char* saveImageViewStFile, int& rows, int& cols, bool& isOver);
 void loopDatabase_readStep_imst(unsigned char* inImageOrFeatures, double* keyptsX, double* keyptsY);
 
 void loopDatabase_x86_64_load(const char* databaseYmlGz);

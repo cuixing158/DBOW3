@@ -226,7 +226,7 @@ void loopDatabase_writeStep_imst(const unsigned char* inImageOrFeatures, int row
     }
 }
 
-void loopDatabase_readStep_imst_meta(const char* saveImageViewStFile, int rows, int cols, bool isOver) {
+void loopDatabase_readStep_imst_meta(const char* saveImageViewStFile, int& rows, int& cols, bool& isOver) {
     static int idx = 0;
     static int numbers = 0;
     if (idx == 0) {

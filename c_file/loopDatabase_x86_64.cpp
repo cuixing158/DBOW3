@@ -213,6 +213,7 @@ void loopDatabase_writeStep_imst(const unsigned char* inImageOrFeatures, int row
         for (size_t i = 0; i < imgSt.size(); i++) {
             fs << "keyPoints_" + std::to_string(i) << imgSt[i].keyPoints;
         }
+        fs << "}";
         std::cout << "Done" << std::endl;
         fs.release();
         imgSt.clear();
@@ -222,11 +223,11 @@ void loopDatabase_writeStep_imst(const unsigned char* inImageOrFeatures, int row
         for (size_t i = 0; i < rows; i++) {
             keypts.push_back(cv::Point2d(keyptsX[i], keyptsY[i]));
         }
-        imgSt.push_back(imageViewSt{oriFeatures, keypts});
+        imgSt.push_back(imageViewSt{oriFeatures.t(), keypts});
     }
 }
 
-void loopDatabase_readStep_imst_meta(const char* saveImageViewStFile, int& rows, int& cols, bool& isOver) {
+void loopDatabase_readStep_imst_meta(const char* saveImageViewStFile, int* rows, int* cols, unsigned char* isOver) {
     static int idx = 0;
     static int numbers = 0;
     if (idx == 0) {
@@ -236,7 +237,7 @@ void loopDatabase_readStep_imst_meta(const char* saveImageViewStFile, int& rows,
             cerr << "failed to open file " + imgStFile << endl;
         }
         fs["numbers"] >> numbers;
-        cv::FileNode descriptorsNode = fs["descriptiors"];
+        cv::FileNode descriptorsNode = fs["descriptors"];
         cv::FileNode keyPointsNode = fs["keyPoints"];
         for (auto iter = descriptorsNode.begin(); iter != descriptorsNode.end(); iter++) {
             cv::Mat temp;
@@ -252,15 +253,15 @@ void loopDatabase_readStep_imst_meta(const char* saveImageViewStFile, int& rows,
     }
 
     if (idx < numbers) {
-        rows = descriptors[idx].rows;
-        cols = descriptors[idx].cols;
-        isOver = false;
+        *rows = descriptors[idx].rows;
+        *cols = descriptors[idx].cols;
+        *isOver = false;
     } else {
-        rows = 0;
-        cols = 0;
+        *rows = 0;
+        *cols = 0;
         descriptors.clear();
         keypoints.clear();
-        isOver = true;
+        *isOver = true;
     }
     idx++;
 }

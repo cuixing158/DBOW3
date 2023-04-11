@@ -227,54 +227,42 @@ void loopDatabase_writeStep_imst(const unsigned char* inImageOrFeatures, int row
     }
 }
 
-void loopDatabase_readStep_imst_meta(const char* saveImageViewStFile, int* rows, int* cols, unsigned char* isOver) {
-    static int idx = 0;
-    static int numbers = 0;
-    if (idx == 0) {
-        std::string imgStFile(saveImageViewStFile);
-        cv::FileStorage fs(imgStFile, cv::FileStorage::READ);
-        if (!fs.isOpened()) {
-            cerr << "failed to open file " + imgStFile << endl;
-        }
-        fs["numbers"] >> numbers;
-        cv::FileNode descriptorsNode = fs["descriptors"];
-        cv::FileNode keyPointsNode = fs["keyPoints"];
-        for (auto iter = descriptorsNode.begin(); iter != descriptorsNode.end(); iter++) {
-            cv::Mat temp;
-            *iter >> temp;
-            descriptors.push_back(temp);
-        }
-        for (auto iter = keyPointsNode.begin(); iter != keyPointsNode.end(); iter++) {
-            std::vector<cv::Point2d> temp;
-            *iter >> temp;
-            keypoints.push_back(temp);
-        }
-        fs.release();
+void loopDatabase_read_imst_numEles(const char* saveImageViewStFile, int* numEles) {
+    descriptors.clear();
+    keypoints.clear();
+    std::string imgStFile(saveImageViewStFile);
+    cv::FileStorage fs(imgStFile, cv::FileStorage::READ);
+    if (!fs.isOpened()) {
+        cerr << "failed to open file " + imgStFile << endl;
     }
-
-    if (idx < numbers) {
-        *rows = descriptors[idx].rows;
-        *cols = descriptors[idx].cols;
-        *isOver = false;
-    } else {
-        *rows = 0;
-        *cols = 0;
-        descriptors.clear();
-        keypoints.clear();
-        *isOver = true;
+    fs["numbers"] >> *numEles;
+    cv::FileNode descriptorsNode = fs["descriptors"];
+    cv::FileNode keyPointsNode = fs["keyPoints"];
+    for (auto iter = descriptorsNode.begin(); iter != descriptorsNode.end(); iter++) {
+        cv::Mat temp;
+        *iter >> temp;
+        descriptors.push_back(temp);
     }
-    idx++;
+    for (auto iter = keyPointsNode.begin(); iter != keyPointsNode.end(); iter++) {
+        std::vector<cv::Point2d> temp;
+        *iter >> temp;
+        keypoints.push_back(temp);
+    }
+    fs.release();
 }
 
-void loopDatabase_readStep_imst(unsigned char* inImageOrFeatures, double* keyptsX, double* keyptsY) {
-    static size_t idx = 0;
+void loopDatabase_readStep_imst_meta(int idx, int* rows, int* cols) {
+    idx = idx - 1;
+    *rows = descriptors[idx].rows;
+    *cols = descriptors[idx].cols;
+}
+
+void loopDatabase_readStep_imst(int idx, unsigned char* inImageOrFeatures, double* keyptsXY) {
+    idx = idx - 1;
     cv::Mat oriFeat = descriptors[idx];
     convertCVToMatrix(oriFeat, oriFeat.rows, oriFeat.cols, 1, inImageOrFeatures);
-    for (size_t i = 0; i < oriFeat.rows; i++) {
-        keyptsX[i] = keypoints[idx][i].x;
-        keyptsY[i] = keypoints[idx][i].y;
-    }
-    idx++;
+    cv::Mat keyPts = cv::Mat(keypoints[idx]).reshape(1);  // NX2 double类型Mat
+    convertCVToMatrix(keyPts, keyPts.rows, keyPts.cols, 1, keyptsXY);
 }
 
 void loopDatabase_x86_64_load(const char* databaseYmlGz) {

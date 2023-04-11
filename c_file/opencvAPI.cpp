@@ -12,16 +12,18 @@
 
 #include "opencvAPI.h"
 
+template void convertCVToMatrix<unsigned char>(cv::Mat &, int, int, int, unsigned char *);
+template void convertCVToMatrix<bool>(cv::Mat &, int, int, int, bool *);
+template void convertCVToMatrix<double>(cv::Mat &, int, int, int, double *);
 template void imwarp2<bool>(bool const *, int, int, int, double *, imref2d_ *, bool *);
 template void imwarp2<unsigned char>(unsigned char const *, int, int, int, double *, imref2d_ *, unsigned char *);
 template void alphaBlendOpenCV<bool, unsigned char>(const unsigned char *, int, int, int, unsigned char const *, bool const *, int, int, int, int, int, unsigned char *);
 template void alphaBlendOpenCV<unsigned char, unsigned char>(const unsigned char *, int, int, int, unsigned char const *, unsigned char const *, int, int, int, int, int, unsigned char *);
 template void alphaBlendOpenCV<const unsigned char, unsigned char>(const unsigned char *, int, int, int, const unsigned char *, const unsigned char *, int, int, int, int, int, unsigned char *);
 
-// 对应OpenCV的cv::Mat转MATLAB uint8类型或logical图像
+// 对应OpenCV的cv::Mat转MATLAB uint8类型或logical或者double图像
 template <typename T>
 void convertCVToMatrix(cv::Mat &srcImg, int rows, int cols, int channels, T *dst) {
-    CV_Assert(srcImg.type() == CV_8UC1 || srcImg.type() == CV_8UC3);
     size_t elems = rows * cols;
     if (channels == 3) {
         cv::Mat channels[3];

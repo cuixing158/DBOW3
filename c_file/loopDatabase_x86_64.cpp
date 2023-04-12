@@ -199,7 +199,7 @@ void loopDatabase_writeStep_imst(const unsigned char* inImageOrFeatures, int row
         std::string imgStFile(saveImageViewStFile);
         cv::FileStorage fs(imgStFile, cv::FileStorage::WRITE);
         if (!fs.isOpened()) {
-            cerr << "failed to open file " + imgStFile << endl;
+            cerr << "failed to open file：" + imgStFile + " to write." << endl;
         }
         fs << "numbers" << (int)imgSt.size();
         fs << "descriptors"
@@ -233,7 +233,7 @@ void loopDatabase_read_imst_numEles(const char* saveImageViewStFile, int* numEle
     std::string imgStFile(saveImageViewStFile);
     cv::FileStorage fs(imgStFile, cv::FileStorage::READ);
     if (!fs.isOpened()) {
-        cerr << "failed to open file " + imgStFile << endl;
+        cerr << "failed to open file: " + imgStFile + " to read." << endl;
     }
     fs["numbers"] >> *numEles;
     cv::FileNode descriptorsNode = fs["descriptors"];

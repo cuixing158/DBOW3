@@ -21,6 +21,23 @@ typedef struct imageViewSt {
 std::vector<cv::Mat> descriptors;
 std::vector<std::vector<cv::Point2d> > keypoints;
 
+// 对应OpenCV的cv::Mat转MATLAB uint8类型或logical或者double图像
+template <typename T>
+void convertCVToMatrix(cv::Mat& srcImg, int rows, int cols, int channels, T* dst) {
+    size_t elems = rows * cols;
+    if (channels == 3) {
+        cv::Mat channels[3];
+        cv::split(srcImg.t(), channels);
+
+        memcpy(dst, channels[2].data, elems * sizeof(T));              //copy channel[2] to the red channel
+        memcpy(dst + elems, channels[1].data, elems * sizeof(T));      // green
+        memcpy(dst + 2 * elems, channels[0].data, elems * sizeof(T));  // blue
+    } else {
+        srcImg = srcImg.t();
+        memcpy(dst, srcImg.data, elems * sizeof(T));
+    }
+}
+
 vector<cv::Mat> loadFeatures(std::vector<string> path_to_images, string descriptor = "orb") {
     //select detector
     cv::Ptr<cv::Feature2D> fdetector;

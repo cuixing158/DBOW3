@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
         string databasePath = "./small_db.yml.gz";
 
         // step_0，产生词袋特征
-        loopDatabase_x86_64_init_images(imageListFile.c_str());
+        loopDatabase_x86_64_init_images(imageListFile.c_str(), databasePath.c_str());
 
         // step_1,图片特征添加到词袋数据库
         std::string line;

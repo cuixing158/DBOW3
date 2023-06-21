@@ -289,7 +289,7 @@ void loopDatabase_x86_64_load(const char* databaseYmlGz) {
     std::cout << "load finished!" << std::endl;
 }
 
-// 480*640=307200, 从matlab传入进来的为480*640 单通道uint8图像
+//  从matlab传入进来的为rows*cols 单通道uint8图像
 void loopDatabase_x86_64_add_image(const unsigned char* inImage, int rows, int cols) {
     // 注意MATLAB数组传入的是以列为优先的，与OpnenCV正好相反
     cv::Mat oriImg = cv::Mat(cols, rows, CV_8UC1, (void*)inImage);

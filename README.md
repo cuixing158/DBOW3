@@ -1,5 +1,7 @@
 # MATLAB版本DBOW3回环检测库(图像相似度检测)
 
+[![View DBOW3 on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/172775-dbow3)
+
 ## Overview
 
 本库由于MATLAB计算机视觉工具箱(Computer Vision Toolbox™)中内置系列对象函数[`invertedImageIndex`](https://www.mathworks.com/help/vision/ref/invertedimageindex.html)对于SLAM回环检索（图像相似度）能力相对较弱，故本库利用DBOW3算法优势，**支持MATLAB中`mex`文件自动构建，C/C++代码生成直接映射到此库源代码，支持返回图片的相似度top-k排序，使用方便。**

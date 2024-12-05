@@ -105,6 +105,6 @@ DBOW3方法在loopclosure detection中某个数据集的表现，采用top9可�
 
 ## References
 
-[MATLAB MEX file For C/C++ code generation](https://github.com/cuixing158/mex-file)<br>
-[基于CMake交叉编译C++得到适用与Matlab的Mex加速库文件](https://github.com/cuixing158/MexCmake)<br>
-[DBOW3](https://github.com/rmsalinas/DBow3)<br>
+1. [MATLAB MEX file For C/C++ code generation](https://github.com/cuixing158/mex-file)<br>
+1. [基于CMake交叉编译C++得到适用与Matlab的Mex加速库文件](https://github.com/cuixing158/MexCmake)<br>
+1. [DBOW3](https://github.com/rmsalinas/DBow3)<br>
